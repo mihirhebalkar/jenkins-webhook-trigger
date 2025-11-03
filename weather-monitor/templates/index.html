@@ -1,18 +1,581 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Weather Monitor</title>
+  <title>Weather Monitor Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial; background: #f2f2f2; text-align: center; margin-top: 50px; }
-    .card { background: white; padding: 20px; border-radius: 12px; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    h2 { color: #333; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Header Section */
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: fadeIn 0.6s ease-in;
+    }
+
+    .greeting {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .greeting-text h1 {
+      font-size: 2.2rem;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .greeting-text p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: white;
+      font-weight: bold;
+    }
+
+    .user-details h3 {
+      color: #333;
+      font-size: 1.3rem;
+      margin-bottom: 3px;
+    }
+
+    .user-details p {
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .username-input {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .username-input input {
+      padding: 8px 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      flex: 1;
+      max-width: 200px;
+    }
+
+    .username-input button {
+      padding: 8px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: transform 0.2s;
+    }
+
+    .username-input button:hover {
+      transform: scale(1.05);
+    }
+
+    /* Current Weather Section */
+    .current-weather {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: slideUp 0.6s ease-out;
+      text-align: center;
+    }
+
+    .weather-icon-large {
+      font-size: 6rem;
+      margin-bottom: 20px;
+      animation: pulse 3s infinite;
+    }
+
+    .current-temp {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .condition-text {
+      font-size: 1.8rem;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .feels-like {
+      font-size: 1.1rem;
+      color: #999;
+      margin-bottom: 20px;
+    }
+
+    .current-date {
+      font-size: 1rem;
+      color: #999;
+      padding-top: 20px;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    /* Main Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .weather-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .weather-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card-icon {
+      font-size: 2.5rem;
+    }
+
+    .card-title {
+      flex: 1;
+    }
+
+    .card-title h3 {
+      color: #333;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .card-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .card-description {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 15px;
+      line-height: 1.6;
+      padding-top: 15px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    /* Info Boxes */
+    .info-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .info-box {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .info-box h3 {
+      color: #333;
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-box p {
+      color: #666;
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    .info-box ul {
+      color: #666;
+      line-height: 1.8;
+      margin-left: 20px;
+    }
+
+    /* Footer */
+    .footer {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: blink 2s infinite;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes blink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .greeting-text h1 {
+        font-size: 1.8rem;
+      }
+      
+      .current-temp {
+        font-size: 3rem;
+      }
+
+      .condition-text {
+        font-size: 1.4rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🌦️ Weather Monitoring</h1>
-    <h2>Temperature: {{ data.temperature }} °C</h2>
-    <h2>Humidity: {{ data.humidity }} %</h2>
+  <div class="container">
+    <!-- Header with Greeting -->
+    <div class="header">
+      <div class="greeting">
+        <div class="greeting-text">
+          <h1>👋 Hello, <span id="displayName">Guest</span>!</h1>
+          <p>Welcome to your personal weather monitoring dashboard</p>
+          <div class="username-input" id="nameInput">
+            <input type="text" id="userName" placeholder="Enter your name" maxlength="20">
+            <button onclick="saveName()">Save</button>
+          </div>
+        </div>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">G</div>
+          <div class="user-details">
+            <h3 id="userGreeting">Guest User</h3>
+            <p>Weather Enthusiast</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Weather Highlight -->
+    <div class="current-weather">
+      <div class="weather-icon-large" id="mainIcon">🌤️</div>
+      <div class="current-temp"><span id="mainTemp">--</span>°C</div>
+      <div class="condition-text" id="condition">Loading...</div>
+      <div class="feels-like">Feels like <span id="feelsLike">--</span>°C</div>
+      <div class="current-date" id="currentDate">--</div>
+    </div>
+
+    <!-- Weather Details Grid -->
+    <div class="main-grid">
+      <div class="weather-card">
+        <div class="card-header">
+          <div class="card-icon">🌡️</div>
+          <div class="card-title">
+            <h3>Temperature</h3>
+          </div>
+        </div>
+        <div class="card-value"><span id="temperature">--</span>°C</div>
+        <div class="card-description">
+          Current air temperature measured in degrees Celsius. This is the actual temperature of the air around you.
+        </div>
+      </div>
+
+      <div class="weather-card">
+        <div class="card-header">
+          <div class="card-icon">💧</div>
+          <div class="card-title">
+            <h3>Humidity</h3>
+          </div>
+        </div>
+        <div class="card-value"><span id="humidity">--</span>%</div>
+        <div class="card-description">
+          Relative humidity percentage. Higher values mean more moisture in the air, which can make it feel warmer.
+        </div>
+      </div>
+
+      <div class="weather-card">
+        <div class="card-header">
+          <div class="card-icon">🎚️</div>
+          <div class="card-title">
+            <h3>Pressure</h3>
+          </div>
+        </div>
+        <div class="card-value"><span id="pressure">--</span> hPa</div>
+        <div class="card-description">
+          Atmospheric pressure in hectopascals. Rising pressure usually means improving weather conditions.
+        </div>
+      </div>
+
+      <div class="weather-card">
+        <div class="card-header">
+          <div class="card-icon">💨</div>
+          <div class="card-title">
+            <h3>Wind Speed</h3>
+          </div>
+        </div>
+        <div class="card-value"><span id="wind_speed">--</span> km/h</div>
+        <div class="card-description">
+          Current wind speed measured in kilometers per hour. Wind speed affects how cold or warm it feels outside.
+        </div>
+      </div>
+
+      <div class="weather-card">
+        <div class="card-header">
+          <div class="card-icon">👁️</div>
+          <div class="card-title">
+            <h3>Visibility</h3>
+          </div>
+        </div>
+        <div class="card-value"><span id="visibility">--</span> km</div>
+        <div class="card-description">
+          How far you can see horizontally. Good visibility is typically above 10km, while fog reduces it significantly.
+        </div>
+      </div>
+
+      <div class="weather-card">
+        <div class="card-header">
+          <div class="card-icon">☀️</div>
+          <div class="card-title">
+            <h3>UV Index</h3>
+          </div>
+        </div>
+        <div class="card-value"><span id="uv_index">--</span></div>
+        <div class="card-description">
+          Ultraviolet radiation index. 0-2 is low, 3-5 moderate, 6-7 high, 8-10 very high. Use sunscreen when 3+.
+        </div>
+      </div>
+
+      <div class="weather-card">
+        <div class="card-header">
+          <div class="card-icon">💦</div>
+          <div class="card-title">
+            <h3>Dew Point</h3>
+          </div>
+        </div>
+        <div class="card-value"><span id="dew_point">--</span>°C</div>
+        <div class="card-description">
+          Temperature at which air becomes saturated with moisture. Higher dew points feel more humid and uncomfortable.
+        </div>
+      </div>
+    </div>
+
+    <!-- Information Section -->
+    <div class="info-section">
+      <div class="info-box">
+        <h3>📊 About This Dashboard</h3>
+        <p>
+          This weather monitoring dashboard provides real-time atmospheric data to help you plan your day. 
+          All measurements are updated automatically every 5 seconds to ensure you have the most current information. 
+          The data includes temperature, humidity, atmospheric pressure, wind conditions, visibility, UV index, 
+          and dew point measurements.
+        </p>
+      </div>
+
+      <div class="info-box">
+        <h3>🌡️ Understanding Weather Data</h3>
+        <p>
+          <strong>Temperature:</strong> Measures actual air temperature.<br>
+          <strong>Feels Like:</strong> Accounts for humidity and wind chill.<br>
+          <strong>Humidity:</strong> Amount of moisture in the air (comfort range: 30-50%).<br>
+          <strong>Pressure:</strong> Weight of atmosphere above you (normal: 1013 hPa).
+        </p>
+      </div>
+
+      <div class="info-box">
+        <h3>💡 Weather Tips</h3>
+        <ul>
+          <li>UV Index 3+: Apply sunscreen before going outside</li>
+          <li>Humidity 60%+: Stay hydrated and seek air conditioning</li>
+          <li>Wind 20+ km/h: Secure loose outdoor items</li>
+          <li>Visibility <5km: Drive carefully with headlights on</li>
+          <li>Dew Point 18°C+: Conditions will feel muggy and humid</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <strong>Last Updated:</strong> <span id="timestamp">--</span>
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span>Live Data - Auto-refreshing every 5 seconds</span>
+      </div>
+    </div>
   </div>
+
+  <script>
+    // Load saved username
+    function loadName() {
+      const savedName = localStorage.getItem('weatherUserName');
+      if (savedName) {
+        document.getElementById('displayName').textContent = savedName;
+        document.getElementById('userGreeting').textContent = savedName;
+        document.getElementById('userAvatar').textContent = savedName.charAt(0).toUpperCase();
+        document.getElementById('nameInput').style.display = 'none';
+      }
+    }
+
+    // Save username
+    function saveName() {
+      const name = document.getElementById('userName').value.trim();
+      if (name) {
+        localStorage.setItem('weatherUserName', name);
+        document.getElementById('displayName').textContent = name;
+        document.getElementById('userGreeting').textContent = name;
+        document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+        document.getElementById('nameInput').style.display = 'none';
+      }
+    }
+
+    // Get weather icon based on condition
+    function getWeatherIcon(condition) {
+      const icons = {
+        'Sunny': '☀️',
+        'Partly Cloudy': '⛅',
+        'Cloudy': '☁️',
+        'Rainy': '🌧️',
+        'Clear': '🌙'
+      };
+      return icons[condition] || '🌤️';
+    }
+
+    // Update weather data
+    async function updateWeather() {
+      try {
+        const response = await fetch('/api/weather');
+        const data = await response.json();
+        
+        // Update main display
+        document.getElementById('mainTemp').textContent = data.temperature;
+        document.getElementById('condition').textContent = data.condition;
+        document.getElementById('feelsLike').textContent = data.feels_like;
+        document.getElementById('currentDate').textContent = data.date;
+        document.getElementById('mainIcon').textContent = getWeatherIcon(data.condition);
+        
+        // Update detail cards
+        document.getElementById('temperature').textContent = data.temperature;
+        document.getElementById('humidity').textContent = data.humidity;
+        document.getElementById('pressure').textContent = data.pressure;
+        document.getElementById('wind_speed').textContent = data.wind_speed;
+        document.getElementById('visibility').textContent = data.visibility;
+        document.getElementById('uv_index').textContent = data.uv_index;
+        document.getElementById('dew_point').textContent = data.dew_point;
+        document.getElementById('timestamp').textContent = data.timestamp;
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+      }
+    }
+
+    // Initialize
+    loadName();
+    updateWeather();
+    setInterval(updateWeather, 5000);
+
+    // Allow Enter key to save name
+    document.getElementById('userName').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        saveName();
+      }
+    });
+  </script>
 </body>
 </html>
